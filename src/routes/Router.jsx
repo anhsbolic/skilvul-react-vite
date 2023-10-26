@@ -20,7 +20,7 @@ const ROUTE_LIST = [
     element: <ProductListPage />,
   },
   {
-    path: '/products/:id',
+    path: '/products/:productId',
     element: <ProductDetailPage />,
   },
 ];

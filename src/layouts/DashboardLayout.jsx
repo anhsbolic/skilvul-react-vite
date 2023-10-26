@@ -8,12 +8,12 @@ const DashboardLayout = ({ children }) => {
       </nav>
 
       <div id="container">
-        <div class="sidebar">
+        <div className="sidebar">
           <Link to="/">Home</Link>
           <Link to="/products">Product</Link>
         </div>
 
-        <div class="main">{children}</div>
+        <div className="main">{children}</div>
       </div>
     </>
   );
