@@ -1,20 +1,10 @@
-import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {getProductList} from "../../services/productService";
-import ProductItemComponent from "../../components/product/ProductItemComponent";
+import {useSelector} from "react-redux";
+import ProductReduxItemComponent from "../../components/product/ProductReduxItemComponent";
 
-const ProductListPage = () => {
+const ProductReduxListPage = () => {
     const navigate = useNavigate()
-    const [products, setProducts] = useState([]);
-
-    const fetchProductList = async () => {
-        const resProductList = await getProductList();
-        setProducts(resProductList.data);
-    }
-
-    useEffect(() => {
-        fetchProductList();
-    }, []);
+    const products = useSelector((state) => state.product.products);
 
     const openProductCreatePage = () => {
         navigate('/product-new');
@@ -39,7 +29,7 @@ const ProductListPage = () => {
             <div className="d-flex flex-wrap" style={{gap: '8px'}}>
                 {
                     products.map((product, index) => {
-                        return <ProductItemComponent key={index} product={product}/>
+                        return <ProductReduxItemComponent key={index} product={product}/>
                     })
                 }
             </div>
@@ -47,4 +37,4 @@ const ProductListPage = () => {
     );
 };
 
-export default ProductListPage;
+export default ProductReduxListPage;
