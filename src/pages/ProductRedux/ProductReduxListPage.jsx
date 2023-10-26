@@ -7,7 +7,7 @@ const ProductReduxListPage = () => {
     const products = useSelector((state) => state.product.products);
 
     const openProductCreatePage = () => {
-        navigate('/product-new');
+        navigate('/redux-product-new');
     }
 
     return (
