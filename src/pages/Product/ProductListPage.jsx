@@ -1,7 +1,9 @@
 import {useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import ProductItemComponent from "../../components/product/ProductItemComponent.jsx";
 
 const ProductListPage = () => {
+    const navigate = useNavigate()
     const [products, setProducts] = useState([]);
 
     useEffect(() => {
@@ -37,6 +39,10 @@ const ProductListPage = () => {
         ]);
     }
 
+    const openProductCreatePage = () => {
+        navigate('/product-new');
+    }
+
     return (
         <>
             <div className="row w-100">
@@ -45,7 +51,11 @@ const ProductListPage = () => {
                     <p>Here a list of our products:</p>
                 </div>
                 <div className="col-4">
-                    <button className="btn btn-success float-right">Create</button>
+                    <button className="btn btn-success float-right"
+                            onClick={openProductCreatePage}
+                    >
+                        Create
+                    </button>
                 </div>
             </div>
 
