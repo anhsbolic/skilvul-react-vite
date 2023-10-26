@@ -9,7 +9,7 @@ const ProductDetailPage = () => {
 
     const fetchProductDetail = async (id) => {
         const resProduct = await getProductDetail(id);
-        setProduct(resProduct.data);
+        setProduct(resProduct);
     }
 
     useEffect(() => {
