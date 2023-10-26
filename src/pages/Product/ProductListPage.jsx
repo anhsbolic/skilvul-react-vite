@@ -1,8 +1,8 @@
-import React, {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import ProductItemComponent from "../../components/product/ProductItemComponent.jsx";
 
 const ProductListPage = () => {
-    const [products, setProducts] = React.useState([]);
+    const [products, setProducts] = useState([]);
 
     useEffect(() => {
         getProducts();
@@ -42,7 +42,7 @@ const ProductListPage = () => {
             <div className="row w-100">
                 <div className="col-8">
                     <h2>Products</h2>
-                    <p>Heres a list of our products:</p>
+                    <p>Here a list of our products:</p>
                 </div>
                 <div className="col-4">
                     <button className="btn btn-success float-right">Create</button>
