@@ -2,14 +2,19 @@ import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {getProductList} from "../../services/productService";
 import ProductItemComponent from "../../components/product/ProductItemComponent";
+import ModalLoadingComponent from "../../components/loader/ModalLoadingComponent.jsx";
 
 const ProductListPage = () => {
     const navigate = useNavigate()
+
+    const [isLoading, setIsLoading] = useState(false);
     const [products, setProducts] = useState([]);
 
     const fetchProductList = async () => {
+        setIsLoading(true);
         const resProductList = await getProductList();
         setProducts(resProductList);
+        setIsLoading(false);
     }
 
     useEffect(() => {
@@ -22,6 +27,8 @@ const ProductListPage = () => {
 
     return (
         <>
+            <ModalLoadingComponent isShow={isLoading} message="Get Products..."/>
+
             <div className="row w-100">
                 <div className="col-8">
                     <h2>Products</h2>

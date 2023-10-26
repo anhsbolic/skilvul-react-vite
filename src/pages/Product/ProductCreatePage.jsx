@@ -1,10 +1,27 @@
 import {useState} from 'react';
+import {useNavigate} from "react-router-dom";
+import {postCreateProduct} from "../../services/productService.js";
 
 const ProductCreatePage = () => {
+    const navigate = useNavigate();
+
     const [formData, setFormData] = useState({
-        email: "",
-        password: ""
+        name: "",
+        description: "",
+        price: "",
+        file: null,
+        image: null,
     });
+
+    const handleFileChange = (event) => {
+        if (event.target.files && event.target.files.length > 0) {
+            setFormData((prevProps) => ({
+                ...prevProps,
+                file: event.target.files[0],
+                image: URL.createObjectURL(event.target.files[0]),
+            }));
+        }
+    }
 
     const handleInputChange = (event) => {
         const {name, value} = event.target;
@@ -14,9 +31,18 @@ const ProductCreatePage = () => {
         }));
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log(formData);
+        const productData = {
+            name: formData.name,
+            description: formData.description,
+            price: formData.price,
+            image: formData.image,
+        }
+        const resCreateProduct = await postCreateProduct(productData);
+        if (resCreateProduct) {
+            navigate("/products");
+        }
     };
 
     return (
@@ -27,33 +53,76 @@ const ProductCreatePage = () => {
                 </div>
             </div>
 
-            <div className="row w-100 mt-2">
-                <div className="col">
-                    <div className="form-group">
-                        <label htmlFor="file">Select image to upload:</label>
-                        <input required type="file" accept="image/*" className="form-control-file" id="file"
-                               name="file"/>
-                        <img id="preview" src="#" alt="Preview"
-                             style={{display: "none", maxWidth: "200px", maxHeight: "200px"}}/>
+            <form onSubmit={handleSubmit}>
+                <div className="row w-100 mt-2">
+                    <div className="col">
+                        <div className="form-group mb-4">
+                            <label htmlFor="file" className="mb-2">Select image to upload:</label>
+                            <input
+                                required
+                                id="file"
+                                className="form-control-file"
+                                type="file"
+                                accept="image/*"
+                                name="file"
+                                onChange={handleFileChange}
+                            />
+                            {
+                                formData.image && formData.image !== "" ?
+                                    <img
+                                        id="preview"
+                                        src={formData.image}
+                                        alt="Preview"
+                                        style={{maxWidth: "200px", maxHeight: "200px"}}
+                                    />
+                                    :
+                                    null
+                            }
+                        </div>
+                        <div className="form-group mb-2">
+                            <label htmlFor="input-name">Name:</label>
+                            <input
+                                id="input-name"
+                                className="form-control"
+                                name="name"
+                                type="text"
+                                placeholder="Enter name"
+                                value={formData.name}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </div>
+                        <div className="form-group mb-2">
+                            <label htmlFor="description">Description:</label>
+                            <textarea
+                                id="description"
+                                className="form-control"
+                                name="description"
+                                placeholder="Enter description"
+                                value={formData.description}
+                                onChange={handleInputChange}
+                            >
+                            </textarea>
+                        </div>
+                        <div className="form-group mb-2">
+                            <label htmlFor="price">Price:</label>
+                            <input
+                                id="price"
+                                className="form-control"
+                                name="price"
+                                type="number"
+                                placeholder="Enter price"
+                                value={formData.price}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </div>
+                        <button type="submit" className="btn btn-primary mt-2">
+                            Submit
+                        </button>
                     </div>
-                    <div className="form-group">
-                        <label htmlFor="name">Name:</label>
-                        <input required type="text" className="form-control" id="name" placeholder="Enter name"
-                               name="name"/>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="description">Description:</label>
-                        <textarea className="form-control" id="description" placeholder="Enter description"
-                                  name="description"></textarea>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="price">Price:</label>
-                        <input required type="number" className="form-control" id="price" placeholder="Enter price"
-                               name="price"/>
-                    </div>
-                    <button type="submit" className="btn btn-primary">Submit</button>
                 </div>
-            </div>
+            </form>
         </>
     )
 };
