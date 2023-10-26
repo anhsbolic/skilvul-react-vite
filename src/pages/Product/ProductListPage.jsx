@@ -12,8 +12,10 @@ const ProductListPage = () => {
 
     const fetchProductList = async () => {
         setIsLoading(true);
+
         const resProductList = await getProductList();
         setProducts(resProductList);
+
         setIsLoading(false);
     }
 

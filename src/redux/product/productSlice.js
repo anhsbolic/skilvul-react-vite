@@ -9,8 +9,7 @@ const productSlice = createSlice({
     initialState,
     reducers: {
         setProducts: (state, action) => {
-            state.products.clear();
-            state.products.addAll(action.payload);
+            state.products = action.payload;
         },
         addProduct: (state, action) => {
             state.products.push(action.payload);
