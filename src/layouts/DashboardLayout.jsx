@@ -12,6 +12,7 @@ const DashboardLayout = ({children}) => {
                     <Link to="/">Home</Link>
                     <Link to="/products">Product</Link>
                     <Link to="/redux-products">Product Redux</Link>
+                    <Link to="/chats">Chat</Link>
                 </div>
 
                 <div className="main">{children}</div>

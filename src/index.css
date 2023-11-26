@@ -122,3 +122,81 @@ nav li a:hover {
   height: 200px;
   object-fit: cover;
 }
+
+.chat-user {
+  display: flex;
+  align-items: center;
+  width: unset;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.user-name {
+  font-weight: bold;
+}
+
+.chat-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.name {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.last-chat {
+  font-size: 14px;
+  color: #888;
+}
+
+.current-user-bubble {
+  background-color: #8ccec66b;
+  color: #333;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.other-user-bubble {
+  background-color: #e0e0e0;
+  color: #333;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.chat-message {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.message-bubble {
+  display: flex;
+  flex-direction: column;
+}
+
+.message-content {
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.timestamp {
+  font-size: 12px;
+  color: #999;
+}
