@@ -1,6 +1,19 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { getUsers } from '../../services/userService';
+import { db } from '../../firebase';
+import {
+  query,
+  collection,
+  orderBy,
+  onSnapshot,
+  limit,
+  where,
+  doc,
+  getDoc,
+  updateDoc,
+} from 'firebase/firestore';
+
 import ModalLoadingComponent from '../../components/loader/ModalLoadingComponent.jsx';
 import ChatUsersModal from './components/ChatUsersModal';
 import ChatItemComponent from './components/ChatItemComponent.jsx';
@@ -8,6 +21,8 @@ import ChatMessageComponent from './components/ChatMessageComponent.jsx';
 
 const ChatListPage = () => {
   const navigate = useNavigate();
+  const search = useLocation().search;
+  const userId = new URLSearchParams(search).get('user_id');
 
   const [isLoading, setIsLoading] = useState(false);
   const [isModalUsersShow, setIsModalUsersShow] = useState(false);
@@ -87,68 +102,9 @@ const ChatListPage = () => {
     },
   ]);
 
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      user: {
-        id: 1,
-        name: 'John Doe',
-        avatar: 'https://i.pravatar.cc/150?img=1',
-      },
-      content: 'Hello, how are you?',
-      created_at: '2021-10-10 10:00:00',
-    },
-    {
-      id: 2,
-      user: {
-        id: 2,
-        name: 'Jane Doe',
-        avatar: 'https://i.pravatar.cc/150?img=2',
-      },
-      content: 'Hi, I am fine, thanks!',
-      created_at: '2021-10-10 10:01:00',
-    },
-    {
-      id: 3,
-      user: {
-        id: 3,
-        name: 'John Smith',
-        avatar: 'https://i.pravatar.cc/150?img=3',
-      },
-      content: 'What are you doing?',
-      created_at: '2021-10-10 10:02:00',
-    },
-    {
-      id: 4,
-      user: {
-        id: 4,
-        name: 'Jane Smith',
-        avatar: 'https://i.pravatar.cc/150?img=4',
-      },
-      content: 'I am working on my project.',
-      created_at: '2021-10-10 10:03:00',
-    },
-    {
-      id: 5,
-      user: {
-        id: 5,
-        name: 'John Doe',
-        avatar: 'https://i.pravatar.cc/150?img=5',
-      },
-      content: 'Hello, how are you?',
-      created_at: '2021-10-10 10:04:00',
-    },
-    {
-      id: 6,
-      user: {
-        id: 6,
-        name: 'Jane Doe',
-        avatar: 'https://i.pravatar.cc/150?img=6',
-      },
-      content: 'Hi, I am fine, thanks!',
-      created_at: '2021-10-10 10:05:00',
-    },
-  ]);
+  const [chat, setChat] = useState({});
+  const [messages, setMessages] = useState([]);
+  const [inputMessage, setInputMessage] = useState('');
 
   const fetchUsers = async () => {
     setIsLoading(true);
@@ -160,11 +116,54 @@ const ChatListPage = () => {
   };
 
   useEffect(() => {
-    fetchUsers();
+    // fetchUsers();
+  }, []);
+
+  const getChatByFilter = () => {
+    const q = query(
+      collection(db, 'chats'),
+      where('user_id_1', '==', 1),
+      where('user_id_2', '==', 2)
+    );
+    const unsubscribe = onSnapshot(q, (QuerySnapshot) => {
+      QuerySnapshot.forEach((doc) => {
+        setChat({
+          id: doc.id,
+          user_id_1: doc.data().user_id_1,
+          user_id_2: doc.data().user_id_2,
+        });
+        setMessages(doc.data().messages);
+      });
+    });
+    return () => unsubscribe;
+  };
+
+  useEffect(() => {
+    getChatByFilter();
   }, []);
 
   const showUsersModal = () => {
     setIsModalUsersShow(true);
+  };
+
+  const sendMessageToFirestore = async () => {
+    console.log('send message', chat, messages);
+    const refDoc = doc(db, 'chats', chat.id);
+    await updateDoc(refDoc, {
+      messages: [
+        ...messages,
+        {
+          user_id: userId,
+          name: userId == 1 ? 'Anhar' : 'Sayid',
+          avatar:
+            userId == 1
+              ? 'https://i.pravatar.cc/150?img=1'
+              : 'https://i.pravatar.cc/150?img=2',
+          message: inputMessage,
+          created_at: new Date().toISOString(),
+        },
+      ],
+    });
   };
 
   return (
@@ -188,7 +187,7 @@ const ChatListPage = () => {
       </div>
 
       <div className="row w-100">
-        <div className="col-2">
+        {/* <div className="col-2">
           {chats.map((chat, index) => {
             return (
               <div className="row">
@@ -196,11 +195,11 @@ const ChatListPage = () => {
               </div>
             );
           })}
-        </div>
-        <div className="col-10">
+        </div> */}
+        <div className="col-12">
           <div className="row">
             <div className="col-12">
-              <h2>John Doe</h2>
+              <h2>Sayid</h2>
             </div>
           </div>
           <div className="row" style={{ height: '300px', overflow: 'auto' }}>
@@ -209,6 +208,7 @@ const ChatListPage = () => {
                 return (
                   <ChatMessageComponent
                     key={`msg-${index}`}
+                    userId={userId}
                     message={message}
                   />
                 );
@@ -217,19 +217,25 @@ const ChatListPage = () => {
           </div>
           <div className="row">
             <div className="col-12">
-              <form>
-                <div className="form-group">
-                  <label htmlFor="content">Message</label>
-                  <textarea
-                    className="form-control"
-                    id="content"
-                    rows="3"
-                  ></textarea>
-                </div>
-                <button type="submit" className="btn btn-primary">
-                  Send
-                </button>
-              </form>
+              <div className="form-group">
+                <label htmlFor="content">Message</label>
+                <textarea
+                  className="form-control"
+                  id="content"
+                  rows="3"
+                  onChange={(e) => {
+                    setInputMessage(e.target.value);
+                  }}
+                  value={inputMessage}
+                ></textarea>
+              </div>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={sendMessageToFirestore}
+              >
+                Send
+              </button>
             </div>
           </div>
         </div>
